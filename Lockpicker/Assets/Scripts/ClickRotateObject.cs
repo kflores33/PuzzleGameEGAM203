@@ -14,5 +14,16 @@ public class ClickRotateObject : MonoBehaviour
 
         transform.Rotate(Vector3.down, XaxisRotation, Space.World); // Rotate around the Y-axis
         transform.Rotate(Vector3.right, YaxisRotation, Space.World); // Rotate around the X-axis
+
+        LockLogic lockLogic = GetComponent<LockLogic>();
+        if(!lockLogic.WrenchHasBeenParented)
+        {
+            if (FindFirstObjectByType<TensionWrench>() != null)
+            {
+                FindFirstObjectByType<TensionWrench>().transform.Rotate(Vector3.down, XaxisRotation, Space.World);
+                FindFirstObjectByType<TensionWrench>().transform.Rotate(Vector3.right, YaxisRotation, Space.World);
+            }
+        }
+
     }
 }
