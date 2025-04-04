@@ -24,6 +24,13 @@ public class ClickRotateObject : MonoBehaviour
                 FindFirstObjectByType<TensionWrench>().transform.Rotate(Vector3.right, YaxisRotation, Space.World);
             }
         }
-
+        if(!lockLogic.PickHasBeenParented)
+        {
+            if (FindFirstObjectByType<Pick>() != null)
+            {
+                FindFirstObjectByType<Pick>().transform.Rotate(Vector3.down, XaxisRotation, Space.World);
+                FindFirstObjectByType<Pick>().transform.Rotate(Vector3.right, YaxisRotation, Space.World);
+            }
+        }
     }
 }
