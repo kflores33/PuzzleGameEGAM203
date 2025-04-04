@@ -19,6 +19,19 @@ public class LockLogic : MonoBehaviour
     bool _wrenchInLock; // is the tension wrench in the lock
     [HideInInspector] public bool WrenchHasBeenParented; // has the tension wrench been parented to the lock
 
+    private void Start()
+    {
+        if (FindFirstObjectByType<TensionWrench>() != null)
+        {
+            wrench = FindFirstObjectByType<TensionWrench>();
+        }
+    }
+
+    private void Update()
+    {
+        if(!WrenchHasBeenParented) CheckForWrench();
+    }
+
     #region pin logic
     // generate list of pins according to the count on the scriptable object
     // for example, if the scriptable object has a count of 5, generate a list of 5 pins
@@ -33,13 +46,8 @@ public class LockLogic : MonoBehaviour
 
     #region rotation logic (tension wrench)
 
-    public void Update()
+    private void CheckForWrench()
     {
-        if (FindFirstObjectByType<TensionWrench>() != null)
-        {
-            wrench = FindFirstObjectByType<TensionWrench>();
-        }
-
         // if the tension wrench is in the lock
         if (!_wrenchInLock)
         {
@@ -66,6 +74,10 @@ public class LockLogic : MonoBehaviour
     }
 
     // set range of ideal rotation for the tension wrench (based on SO data)
+
+
     // set range of ideal amount of tension applied (based on SO data)
+
+
     #endregion
 }
