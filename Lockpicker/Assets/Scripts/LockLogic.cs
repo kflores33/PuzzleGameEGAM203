@@ -15,6 +15,7 @@ public class LockLogic : MonoBehaviour
     public Transform WrenchParentedPos;
 
     TensionWrench wrench;
+    Pick pick;
 
     bool _wrenchInLock; // is the tension wrench in the lock
     [HideInInspector] public bool WrenchHasBeenParented; // has the tension wrench been parented to the lock
@@ -24,6 +25,11 @@ public class LockLogic : MonoBehaviour
         if (FindFirstObjectByType<TensionWrench>() != null)
         {
             wrench = FindFirstObjectByType<TensionWrench>();
+        }
+        if(FindAnyObjectByType<Pick>() != null)
+        {
+            pick = FindAnyObjectByType<Pick>();
+            pick.gameObject.SetActive(false);
         }
     }
 
