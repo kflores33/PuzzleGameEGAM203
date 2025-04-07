@@ -14,12 +14,13 @@ public struct Pin
 
     public float MinTension; // minimum amount of tension required to set the pin
     public float MaxTension;
+
+    public float LastTension; // last amount of tension applied to the pin
 }
 
 public class LockLogic : MonoBehaviour
 {
     public LockData lockData; // reference to scriptable object
-    // reference to player script
 
     public Transform WrenchParentedPos;
     public Transform PickParentedPos;
@@ -65,7 +66,7 @@ public class LockLogic : MonoBehaviour
         }
     }
     #region pin logic
-        #region making lists
+    #region making lists
 
     public List<Pin> pins = new List<Pin>(); // pins in the order the player will interact with them
     int _pinIndex;
@@ -90,27 +91,29 @@ public class LockLogic : MonoBehaviour
     {
         float minTension = 0f; // minimum amount of tension required to set the pin
         float maxTension = 0f; // maximum amount of tension required to set the pin
+        float tensionRange = 0f; // fixed range of tension
 
         if (lockData.difficulty == LockData.Difficulty.Easy)
         {
-            minTension = UnityEngine.Random.Range(0.15f, 0.55f);
-            maxTension = minTension + 0.4f;
+            minTension = UnityEngine.Random.Range(0.15f, 0.35f);
+            tensionRange = 0.3f;
         }
         else if (lockData.difficulty == LockData.Difficulty.Medium)
         {
-            minTension = UnityEngine.Random.Range(0.25f, 0.65f);
-            maxTension = minTension + 0.25f;
+            minTension = UnityEngine.Random.Range(0.25f, 0.55f);
+            tensionRange = 0.2f;
         }
         else if (lockData.difficulty == LockData.Difficulty.Hard)
         {
-            minTension = UnityEngine.Random.Range(0.35f, 0.75f);
-            maxTension = minTension + 0.15f;
+            minTension = UnityEngine.Random.Range(0.35f, 0.60f);
+            tensionRange = 0.15f;
         }
+
+        maxTension = minTension + tensionRange;
 
         return Tuple.Create(minTension, maxTension);
     }
 
-    public List<int> pinOrder = new List<int>(); // list of pin numbers in random order
     private void SetPinOrder()
     {
         bindingPins = new List<Pin>(pins); // create a copy of the pins list to shuffle
@@ -120,21 +123,19 @@ public class LockLogic : MonoBehaviour
 
         for (int i = 0; i < bindingPins.Count; i++)
         {
-            Pin pin = pins[i]; // get the pin at index i
+            Pin pin = bindingPins[i]; // get the pin from the shuffled bindingPins list
 
-            //pin.pinNumber = i; // set the pin number based on the order in the list
-            pinOrder.Add(i); // add the pin number to the pin order list
-
-            if(i == 0) // if the pin is the first pin in the list
+            if (i == 0) // if the pin is the first pin in the list
             {
                 pin.isNextBindingPin = true; // set the pin as the first binding pin
+                Debug.Log("First binding pin: " + pin.pinNumber); // log the first binding pin
             }
             else
             {
-                pin.isNextBindingPin = false; 
+                pin.isNextBindingPin = false;
             }
 
-            bindingPins[i] = pin;
+            bindingPins[i] = pin; // update the pin in the bindingPins list
         }
     }
     #endregion
@@ -142,7 +143,6 @@ public class LockLogic : MonoBehaviour
     public Pin CurrentPin;
     public void SelectPin(int direction)
     {
-
         if (direction == -1) // move "left" (down)
         {
             _pinIndex--; // decrement the pin index
@@ -154,7 +154,7 @@ public class LockLogic : MonoBehaviour
 
         _pinIndex = Mathf.Clamp(_pinIndex, 0, pins.Count - 1);
         //_pinIndex = _pinIndex < 0 ? pins.Count - 1 : _pinIndex >= pins.Count ? 0 : _pinIndex; // circluar looping
-         CurrentPin = pins[_pinIndex];
+        CurrentPin = pins[_pinIndex];
         Debug.Log("Current pin: " + CurrentPin.pinNumber); // log the current pin number
     }
 
@@ -181,6 +181,9 @@ public class LockLogic : MonoBehaviour
                     // set the next binding pin to true
                     Pin nextPin = bindingPins[i + 1];
                     nextPin.isNextBindingPin = true;
+
+                    Debug.Log("Next binding pin: " + nextPin.pinNumber); // log the next binding pin
+
                     bindingPins[i + 1] = nextPin;
                     break;
                 }
@@ -188,7 +191,6 @@ public class LockLogic : MonoBehaviour
         }
     }
 
-    //check if all pins are set
     private bool CheckIfAllPinsSet()
     {
         // check if all pins are set
@@ -210,8 +212,20 @@ public class LockLogic : MonoBehaviour
             if (tension >= CurrentPin.MinTension && tension <= CurrentPin.MaxTension)
             {
                 Debug.Log("tension is in range!");
+
+                if(SetPinCoroutine == null)
+                {
+                    SetPinCoroutine = StartCoroutine(SetPinIE(tension)); // start the coroutine to set the pin
+                }
+
                 return true; // tension is within range
             }
+        }
+
+        if (SetPinCoroutine != null)
+        {
+            StopCoroutine(SetPinCoroutine); // stop the coroutine if the tension is not within range
+            SetPinCoroutine = null; // reset the coroutine
         }
 
         return false; // tension is not within range
@@ -233,10 +247,75 @@ public class LockLogic : MonoBehaviour
         }
         return false; // current pin is not a binding pin
     }
+    public bool CheckForSetPin()
+    {
+        // check if the current pin is set
+        for (int i = 0; i < bindingPins.Count; i++)
+        {
+            if (CurrentPin.pinNumber == bindingPins[i].pinNumber)
+            {
+                if (bindingPins[i].isSet)
+                {
+                    return true; // current pin is set
+                }
+            }
+        }
+        return false; // current pin is not set
+    }
 
+    public void SetPin(float tension)
+    {
+        // set the pin as set
+        for (int i = 0; i < bindingPins.Count; i++)
+        {
+            if (CurrentPin.pinNumber == bindingPins[i].pinNumber)
+            {
+                Pin currentPin = bindingPins[i];
+                currentPin.isSet = true; // set the pin as set
+                currentPin.LastTension = tension;
+
+                bindingPins[i] = currentPin; // update the pin in the list
+                SetNextBindingPin(); // set the next binding pin in the sequence
+                break;
+            }
+        }
+    }
+
+    public void ResetPins()
+    {
+        // reset all pins to their original state
+        for (int i = 0; i < bindingPins.Count; i++)
+        {
+            Pin currentPin = bindingPins[i];
+            currentPin.isSet = false; // set the pin as not set
+
+            if (i == 0) // if the pin is the first pin in the list
+            {
+                currentPin.isNextBindingPin = true; // set the pin as the first binding pin
+                Debug.Log("First binding pin: " + currentPin.pinNumber); // log the first binding pin
+            }
+            else
+            {
+                currentPin.isNextBindingPin = false;
+            }
+
+            bindingPins[i] = currentPin; // update the pin in the list
+        }
+    }
+
+    public Coroutine SetPinCoroutine;
+    public IEnumerator SetPinIE(float tension)
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        SetPin(tension); // set the pin
+        StopCoroutine(SetPinCoroutine); // stop the coroutine
+        SetPinCoroutine = null; // reset the coroutine
+    }
+    
     #endregion
 
-        #region rotation logic (tools)
+    #region rotation logic (tools)
 
     private void CheckForWrench()
     {

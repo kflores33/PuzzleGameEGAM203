@@ -24,22 +24,6 @@ public class PlayerLogic : MonoBehaviour
         // specifically, arrow keys to control the pick ( selected pin with left and right, up to tap the pin)
         // for the tension wrench, use a and d to find initial rotation, space to apply tension (during qte?)
 
-    public void SelectPin()
-    {
-        // use arrow keys to cycle through the pins
-        
-
-        // when player presses up key, apply tension to the selected pin 
-        // holding the up key will increase tension variable, of which there is a randomly determined threshold
-            // if held for too long, the pin will become stuck and the lock will reset
-            // down key will decrease tension variable
-            // holding the button will only increase after brief delay
-
-        // tension slowly decreases over time, starts decreasing after a brief delay
-
-        // tapping the key will apply a small amount of tension
-    }
-
     private void Start()
     {
        _lockLogic = FindFirstObjectByType<LockLogic>();
@@ -59,9 +43,19 @@ public class PlayerLogic : MonoBehaviour
                 // move pick to the left
                 _lockLogic.SelectPin(-1); // move to the left
             }
+
+            if (_lockLogic.CheckForSetPin()) // check if the selected pin is set
+            {
+                Debug.Log("pin is set!");
+                tension = 0; // reset tension variable to 0
+            }
         }
 
-        if (Input.GetButtonDown("Vertical"))
+        if (_lockLogic.CheckForSetPin()) // check if the selected pin is set
+        {
+            tension = 0; // reset tension variable to 0
+        }
+        else if (Input.GetButtonDown("Vertical"))
         {
             if (Input.GetAxis("Vertical") > 0)
             {
@@ -69,13 +63,13 @@ public class PlayerLogic : MonoBehaviour
                 if (_lockLogic.CheckForBindingPin()) // check if the selected pin is a binding pin
                 {
                     Debug.Log("binding pin found!");
-                    tension += (tensionMultiplier * multiplierHigh); // increase tension variable
+                    tension += (tensionMultiplier * multiplierLow); // increase tension variable
                     _lockLogic.ComparePinTension(tension); // test player input against lock logic script
                 }
                 else // if the selected pin is not a binding pin
                 {
                     Debug.Log("just a normal pin");
-                    tension += (tensionMultiplier * multiplierLow); // increase tension variable
+                    tension += (tensionMultiplier * multiplierHigh); // increase tension variable
                 }
             }
             else if (Input.GetAxis("Vertical") < 0)
@@ -86,28 +80,26 @@ public class PlayerLogic : MonoBehaviour
                     _lockLogic.ComparePinTension(tension); // test player input against lock logic script
                 }
                 // release tension on the selected pin
-                else tension -= (tensionMultiplier * multiplierLow); // decrease tension variable
+                else tension -= (tensionMultiplier * multiplierHigh); // decrease tension variable
             }
+        } 
 
-            if (tension > 1)
-            {
-                tension = 1; // clamp tension variable to 1
-            }
-            else if (tension < 0)
-            {
-                tension = 0; // clamp tension variable to 0
-            }
-            else
-            {
-                // if the player is not holding the up key, decrease tension variable
-                if (tension > 0)
-                {
-                    tension -= Time.deltaTime * (tensionMultiplier); // decrease tension variable
-                }
-            }
-
-            Slider.value = tension; // update the slider value to reflect the tension variable
+        // if the player is not holding the up key, decrease tension variable
+        if (tension > 0)
+        {
+            tension -= Time.deltaTime * (tensionMultiplier); // decrease tension variable
         }
+
+        if (tension > 1)
+        {
+            tension = 1; // clamp tension variable to 1
+        }
+        else if (tension < 0)
+        {
+            tension = 0; // clamp tension variable to 0
+        }
+
+        Slider.value = tension; // update the slider value to reflect the tension variable
     }
 
     // test player input against lock logic script 

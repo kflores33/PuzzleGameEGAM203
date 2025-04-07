@@ -911,6 +911,7 @@ GameObject:
   - component: {fileID: 680515385}
   - component: {fileID: 680515387}
   - component: {fileID: 680515386}
+  - component: {fileID: 680515388}
   m_Layer: 5
   m_Name: TensionGauge
   m_TagString: Untagged
@@ -977,6 +978,35 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 680515384}
   m_CullTransparentMesh: 1
+--- !u!114 &680515388
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680515384}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbb585080c168d54faef8657e13e75a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sliderHandle: {fileID: 1826500085}
+  sliderFill: {fileID: 1774176553}
+  sliderBack: {fileID: 1802566332}
+  handleColorCorrect: {r: 0.4106794, g: 0.8742138, b: 0.23367335, a: 1}
+  fillColorCorrect: {r: 0.67452544, g: 0.9685534, b: 0.25888988, a: 1}
+  handleColorClose: {r: 0, g: 0.95686275, b: 0.6599545, a: 1}
+  fillColorClose: {r: 0.5137255, g: 1, b: 0.79049677, a: 1}
+  handleColorDefault: {r: 0.52156866, g: 0.52156866, b: 0.52156866, a: 1}
+  fillColorDefault: {r: 0.627451, g: 0.627451, b: 0.627451, a: 1}
+  backColorDefault: {r: 1, g: 1, b: 1, a: 1}
+  handleColorDanger: {r: 1, g: 0.44564003, b: 0, a: 1}
+  fillColorDanger: {r: 1, g: 0.6281042, b: 0.035294116, a: 1}
+  handleColorIncorrect: {r: 0.5031446, g: 0, b: 0.025899393, a: 1}
+  fillColorIncorrect: {r: 0.7169812, g: 0.12851542, b: 0.12851542, a: 1}
+  handleColorDisabled: {r: 0.21383637, g: 0.21383637, b: 0.21383637, a: 1}
+  fillColorDisabled: {r: 0.3333333, g: 0.3333333, b: 0.3333333, a: 1}
+  backColorDisabled: {r: 0.47798735, g: 0.47798735, b: 0.47798735, a: 1}
 --- !u!1 &709037568
 GameObject:
   m_ObjectHideFlags: 0
@@ -1413,7 +1443,6 @@ MonoBehaviour:
   PickParentedPos: {fileID: 1357462883}
   WrenchHasBeenParented: 0
   PickHasBeenParented: 0
-  pinOrder: 
 --- !u!1 &1279994574
 GameObject:
   m_ObjectHideFlags: 0
