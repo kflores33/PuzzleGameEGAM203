@@ -30,25 +30,26 @@ public class PlayerLogic : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetButtonDown("Horizontal"))
+        if(_lockLogic.canTryToSetPin)
         {
-            tension = 0; // reset tension variable to 0
-            if (Input.GetAxis("Horizontal") > 0)
-            {
-                // move pick to the right
-                _lockLogic.SelectPin(1); // move to the right
-            }
-            else if (Input.GetAxis("Horizontal") < 0)
-            {
-                // move pick to the left
-                _lockLogic.SelectPin(-1); // move to the left
-            }
+            GetInputPick(); // get player input for the pick
+        }
+    }
 
-            if (_lockLogic.CheckForSetPin()) // check if the selected pin is set
-            {
-                Debug.Log("pin is set!");
-                tension = 0; // reset tension variable to 0
-            }
+    void GetInputPick()
+    {
+        // reset tension variable to 0
+        if (Input.GetKeyDown(KeyCode.RightArrow))
+        {        
+            tension = 0;
+            // move pick to the right
+            _lockLogic.SelectPin(1); // move to the right
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            tension = 0;
+            // move pick to the left
+            _lockLogic.SelectPin(-1); // move to the left
         }
 
         if (_lockLogic.CheckForSetPin()) // check if the selected pin is set
@@ -57,7 +58,7 @@ public class PlayerLogic : MonoBehaviour
         }
         else if (Input.GetButtonDown("Vertical"))
         {
-            if (Input.GetAxis("Vertical") > 0)
+            if (Input.GetKeyDown(KeyCode.UpArrow))
             {
                 // apply tension to the selected pin
                 if (_lockLogic.CheckForBindingPin()) // check if the selected pin is a binding pin
@@ -72,7 +73,7 @@ public class PlayerLogic : MonoBehaviour
                     tension += (tensionMultiplier * multiplierHigh); // increase tension variable
                 }
             }
-            else if (Input.GetAxis("Vertical") < 0)
+            else if (Input.GetKeyDown(KeyCode.DownArrow))
             {
                 if (_lockLogic.CheckForBindingPin()) // check if the selected pin is a binding pin
                 {

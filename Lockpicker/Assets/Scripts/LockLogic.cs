@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public struct Pin
 {
@@ -34,6 +35,14 @@ public class LockLogic : MonoBehaviour
     bool _pickInLock; // is the pick in the lock
     [HideInInspector] public bool PickHasBeenParented; // has the pick been parented to the lock
 
+    public bool canTryToSetPin; // can the player try to set the pin
+
+    public ParticleSystem winParticles;
+    public GameObject winScreen;
+
+    public TMP_Text pinCount;
+    int _setPins = 0; // number of pins set by the player
+
     private void Start()
     {
         if (FindFirstObjectByType<TensionWrench>() != null)
@@ -58,10 +67,7 @@ public class LockLogic : MonoBehaviour
             if (!PickHasBeenParented) { CheckForPick(); }
             else
             {
-                // if the pick is in the lock and the wrench is in the lock
-                // check for player input
-                // if player input is correct, unlock the lock
-                // else, reset the lock and all pins to their original state
+                canTryToSetPin = true; // player can try to set the pin
             }
         }
     }
@@ -174,7 +180,12 @@ public class LockLogic : MonoBehaviour
 
                 if (i == bindingPins.Count - 1) // if this is the last pin in the list...
                 {
-                    CheckIfAllPinsSet(); // check if all pins are set
+                    if (CheckIfAllPinsSet())
+                    {
+                        Debug.Log("All pins are set!"); // log that all pins are set
+                        Instantiate(winParticles); // play the win particles
+                        winScreen.SetActive(true); // show the win screen
+                    }
                 }
                 else // if there are more pins left in the list
                 {
@@ -279,6 +290,9 @@ public class LockLogic : MonoBehaviour
                 break;
             }
         }
+
+        _setPins++; // increment the number of set pins
+        pinCount.text = $"{_setPins}/{lockData.pinCount}" ; // update the pin count text
     }
 
     public void ResetPins()
