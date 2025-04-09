@@ -776,7 +776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6409563651340415119, guid: eab45846febea28439aaa502e72b1dd9, type: 3}
       propertyPath: m_text
-      value: '0/5
+      value: '0/7
 
 '
       objectReference: {fileID: 0}

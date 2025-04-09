@@ -105,18 +105,18 @@ public class LockLogic : MonoBehaviour
 
         if (lockData.difficulty == LockData.Difficulty.Easy)
         {
-            minTension = UnityEngine.Random.Range(0.15f, 0.35f);
-            tensionRange = 0.3f;
+            minTension = UnityEngine.Random.Range(0.2f, 0.35f);
+            tensionRange = 0.4f;
         }
         else if (lockData.difficulty == LockData.Difficulty.Medium)
         {
-            minTension = UnityEngine.Random.Range(0.25f, 0.55f);
-            tensionRange = 0.2f;
+            minTension = UnityEngine.Random.Range(0.25f, 0.5f);
+            tensionRange = 0.3f;
         }
         else if (lockData.difficulty == LockData.Difficulty.Hard)
         {
             minTension = UnityEngine.Random.Range(0.35f, 0.60f);
-            tensionRange = 0.15f;
+            tensionRange = 0.25f;
         }
 
         maxTension = minTension + tensionRange;
