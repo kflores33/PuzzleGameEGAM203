@@ -2,15 +2,10 @@ using UnityEngine;
 
 public class Keyhole : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void RotateKeyhole(float angle)
     {
-        
-    }
+        Vector3 transformAngle = new Vector3(0, angle, 0);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        this.transform.Rotate(transformAngle);
     }
 }

@@ -103,8 +103,17 @@ public class PlayerLogic : MonoBehaviour
         Slider.value = tension; // update the slider value to reflect the tension variable
     }
 
-    // test player input against lock logic script 
-    // if player input is correct, unlock the lock
+    void GetInputWrench()
+    {
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+
+        }
+    }
     #endregion
 
     #region feedback logic

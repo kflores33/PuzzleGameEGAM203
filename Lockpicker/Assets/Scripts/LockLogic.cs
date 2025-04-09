@@ -39,6 +39,7 @@ public class LockLogic : MonoBehaviour
 
     public ParticleSystem winParticles;
     public GameObject winScreen;
+    public GameObject pickTensionGauge;
 
     public TMP_Text pinCount;
     int _setPins = 0; // number of pins set by the player
@@ -56,6 +57,8 @@ public class LockLogic : MonoBehaviour
         }
         else Debug.LogError("Pick not found in scene");
 
+        pickTensionGauge.SetActive(false);
+
         GeneratePins(); // generate the pins based on the count in the scriptable object
     }
 
@@ -68,6 +71,7 @@ public class LockLogic : MonoBehaviour
             else
             {
                 canTryToSetPin = true; // player can try to set the pin
+                pickTensionGauge.SetActive(true);
             }
         }
     }
@@ -158,8 +162,13 @@ public class LockLogic : MonoBehaviour
             _pinIndex++; // increment the pin index
         }
 
+        float pickPos = (0.5f/pins.Count) * direction;
+
+        if(_pinIndex > -1 && _pinIndex < pins.Count) pick.ChangePos(pickPos);
+
         _pinIndex = Mathf.Clamp(_pinIndex, 0, pins.Count - 1);
         //_pinIndex = _pinIndex < 0 ? pins.Count - 1 : _pinIndex >= pins.Count ? 0 : _pinIndex; // circluar looping
+
         CurrentPin = pins[_pinIndex];
         Debug.Log("Current pin: " + CurrentPin.pinNumber); // log the current pin number
     }
@@ -350,9 +359,8 @@ public class LockLogic : MonoBehaviour
                 // parent the tension wrench to the lock
                 wrench.transform.position = WrenchParentedPos.position;
                 wrench.transform.SetParent(WrenchParentedPos);
+                wrench.transform.localRotation = Quaternion.identity;
 
-                // set the position of the tension wrench to the position of the lock
-                // set the rotation of the tension wrench to the rotation of the lock
                 WrenchHasBeenParented = true;
             }
         }
@@ -375,17 +383,10 @@ public class LockLogic : MonoBehaviour
                 // parent the pick to the lock
                 pick.transform.position = PickParentedPos.position;
                 pick.transform.SetParent(PickParentedPos);
-                // set the position of the pick to the position of the lock
-                // set the rotation of the pick to the rotation of the lock
+                pick.transform.localRotation = Quaternion.identity;
+
                 PickHasBeenParented = true;
-
-                // set range of ideal rotation for the tension wrench (based on SO data)
-
-
-                // set range of ideal amount of tension applied (based on SO data)
-
             }
-            
         }
     }
     #endregion

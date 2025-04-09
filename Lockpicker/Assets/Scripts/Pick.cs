@@ -15,4 +15,12 @@ public class Pick : MonoBehaviour, ITool
         }
         return false;
     }
+
+    public void ChangePos(float notch)
+    {
+        Vector3 pos = transform.localPosition;
+        pos.y += notch;
+
+        transform.localPosition = pos;
+    }
 }
